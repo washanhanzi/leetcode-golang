@@ -1,7 +1,6 @@
 package openTheLock
 
 import (
-	"strconv"
 	"strings"
 )
 
@@ -28,21 +27,30 @@ func openLock(deadends []string, target string) int {
 			if str == target {
 				return rotate
 			}
-			strArr := strings.Split(str, "")
-			for i, d := range strArr {
-				//anti-clockwise
-				antiClockwiseDigit, _ := strconv.Atoi(d)
-				antiClockwiseString := strings.Join(strArr[:i], "") + strconv.Itoa((antiClockwiseDigit+1)%10) + strings.Join(strArr[i+1:], "")
-				if !visited[antiClockwiseString] {
-					visited[antiClockwiseString] = true
-					newQueue = append(newQueue, antiClockwiseString)
+			for i, size := 0, len(str); i < size; i++ {
+				//anticlockwise
+				var anticlockwiseBuilder strings.Builder
+				if str[i] == '0' {
+					anticlockwiseBuilder.WriteString("9")
+				} else {
+					anticlockwiseBuilder.WriteByte(str[i] - 1)
+				}
+				anticlockwiseStr := str[:i] + anticlockwiseBuilder.String() + str[i+1:]
+				if !visited[anticlockwiseStr] {
+					visited[anticlockwiseStr] = true
+					newQueue = append(newQueue, anticlockwiseStr)
 				}
 				//clockwise
-				clockwiseDigit, _ := strconv.Atoi(d)
-				clockwiseString := strings.Join(strArr[:i], "") + strconv.Itoa((clockwiseDigit-1+10)%10) + strings.Join(strArr[i+1:], "")
-				if !visited[clockwiseString] {
-					visited[clockwiseString] = true
-					newQueue = append(newQueue, clockwiseString)
+				var clockwiseBuilder strings.Builder
+				if str[i] == '9' {
+					clockwiseBuilder.WriteString("0")
+				} else {
+					clockwiseBuilder.WriteByte(str[i] + 1)
+				}
+				clockwiseStr := str[:i] + clockwiseBuilder.String() + str[i+1:]
+				if !visited[clockwiseStr] {
+					visited[clockwiseStr] = true
+					newQueue = append(newQueue, clockwiseStr)
 				}
 			}
 		}
